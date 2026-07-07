@@ -1,7 +1,7 @@
 Proyecto Final de POO - GRUPO 2
 Script de la base de datos:
 ```sql
-Create database imortaciones_suzie;
+Create database importaciones_suzie;
 use importaciones_suzie;
 
 -- Tabla Rol
