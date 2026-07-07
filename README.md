@@ -9,6 +9,8 @@ CREATE TABLE Rol (
     RolID INT AUTO_INCREMENT PRIMARY KEY,
     NombreRol VARCHAR(50) NOT NULL
 );
+INSERT INTO Rol (NombreRol) VALUES ('Administrador');
+INSERT INTO Rol (NombreRol) VALUES ('Cliente');
 
 -- Tabla Usuario
 CREATE TABLE Usuario (
