@@ -60,6 +60,11 @@ CREATE TABLE Producto (
     FOREIGN KEY (ProveedorID) REFERENCES Proveedor(ProveedorID),
     FOREIGN KEY (SedeID) REFERENCES Sede(SedeID)
 );
+-- Tabla MetodoPago
+CREATE TABLE MetodoPago (
+    MetodoPagoID INT AUTO_INCREMENT PRIMARY KEY,
+    NombreMetodo varchar(50) NOT NULL,   
+);
 
 -- Tabla Venta
 CREATE TABLE Venta (
@@ -67,7 +72,11 @@ CREATE TABLE Venta (
     FechaVenta DATETIME NOT NULL,
     Total DECIMAL(10,2) NOT NULL,
     UsuarioID INT NOT NULL,
-    FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID)
+    MetodoPagoID INT NOT NULL,
+    SedeID INT NOT NULL,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID),
+    FOREIGN KEY (SedeID) REFERENCES Sede(SedeID),
+    FOREIGN KEY (MetodoPagoID) REFERENCES MetodoPago(MetodoPagoID)    
 );
 
 -- Tabla DetalleVenta
