@@ -4,6 +4,7 @@ public class Venta {
     private int codigoVenta,codigoUsuario,codigoSede,codigoMetodoPago;
     private String fecha;
     private double total;
+    //Holaaaaaa
 
     public int getCodigoVenta() {
         return codigoVenta;
