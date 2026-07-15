@@ -12,9 +12,11 @@ public class Venta {
     private Usuario usuario;
     private MetodoPago metodoPago;
 
+    // Constructores
     public Venta() {
     }
 
+    // Constructor recomendado
     public Venta(Cliente cliente, Usuario usuario, MetodoPago metodoPago) {
         this.cliente = cliente;
         this.usuario = usuario;
@@ -23,6 +25,7 @@ public class Venta {
         this.total = BigDecimal.ZERO;
     }
 
+    // Getters y Setters
     public int getVentaID() {
         return ventaID;
     }
