@@ -1,12 +1,13 @@
 package clases;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Venta {
-    /**
+
     private int ventaID;
     private LocalDateTime fechaVenta;
-    private double total;
+    private BigDecimal total;
     private Cliente cliente;
     private Usuario usuario;
     private MetodoPago metodoPago;
@@ -14,14 +15,12 @@ public class Venta {
     public Venta() {
     }
 
-    public Venta(int ventaID, LocalDateTime fechaVenta, double total,
-                 Cliente cliente, Usuario usuario, MetodoPago metodoPago) {
-        this.ventaID = ventaID;
-        this.fechaVenta = fechaVenta;
-        this.total = total;
+    public Venta(Cliente cliente, Usuario usuario, MetodoPago metodoPago) {
         this.cliente = cliente;
         this.usuario = usuario;
         this.metodoPago = metodoPago;
+        this.fechaVenta = LocalDateTime.now();
+        this.total = BigDecimal.ZERO;
     }
 
     public int getVentaID() {
@@ -40,11 +39,11 @@ public class Venta {
         this.fechaVenta = fechaVenta;
     }
 
-    public double getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
@@ -76,5 +75,4 @@ public class Venta {
     public String toString() {
         return "Venta N° " + ventaID;
     }
-    */
 }
