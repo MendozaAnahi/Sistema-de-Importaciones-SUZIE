@@ -15,7 +15,10 @@ import java.util.List;
 import utils.MySqlConexion;
 
 public class MySqlVentaDAO implements ICrud<Venta, Integer> {
-
+    
+    /**
+    
+    */
     @Override
     public int save(Venta bean) {
         int salida = -1;
@@ -28,7 +31,7 @@ public class MySqlVentaDAO implements ICrud<Venta, Integer> {
             
             pstm = cn.prepareStatement(sql);
             pstm.setTimestamp(1, Timestamp.valueOf(bean.getFechaVenta()));
-            pstm.setBigDecimal(2, bean.getTotal());
+            //pstm.setBigDecimal(2, bean.getTotal());
             pstm.setInt(3, bean.getCliente().getClienteID());
             pstm.setInt(4, bean.getUsuario().getUsuarioID());
             pstm.setInt(5, bean.getMetodoPago().getMetodoPagoID());
@@ -57,7 +60,7 @@ public class MySqlVentaDAO implements ICrud<Venta, Integer> {
             String sql = "UPDATE Venta SET Total=?, MetodoPagoID=? WHERE VentaID=?";
             
             pstm = cn.prepareStatement(sql);
-            pstm.setBigDecimal(1, bean.getTotal());
+            //pstm.setBigDecimal(1, bean.getTotal());
             pstm.setInt(2, bean.getMetodoPago().getMetodoPagoID());
             pstm.setInt(3, bean.getVentaID());
 
@@ -115,7 +118,7 @@ public class MySqlVentaDAO implements ICrud<Venta, Integer> {
                 bean = new Venta();
                 bean.setVentaID(rs.getInt("VentaID"));
                 bean.setFechaVenta(rs.getTimestamp("FechaVenta").toLocalDateTime());
-                bean.setTotal(rs.getBigDecimal("Total"));
+                //bean.setTotal(rs.getBigDecimal("Total"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,7 +149,7 @@ public class MySqlVentaDAO implements ICrud<Venta, Integer> {
                 Venta bean = new Venta();
                 bean.setVentaID(rs.getInt("VentaID"));
                 bean.setFechaVenta(rs.getTimestamp("FechaVenta").toLocalDateTime());
-                bean.setTotal(rs.getBigDecimal("Total"));
+                //bean.setTotal(rs.getBigDecimal("Total"));
                 lista.add(bean);
             }
         } catch (Exception e) {
@@ -179,7 +182,7 @@ public class MySqlVentaDAO implements ICrud<Venta, Integer> {
                 Venta bean = new Venta();
                 bean.setVentaID(rs.getInt("VentaID"));
                 bean.setFechaVenta(rs.getTimestamp("FechaVenta").toLocalDateTime());
-                bean.setTotal(rs.getBigDecimal("Total"));
+                //bean.setTotal(rs.getBigDecimal("Total"));
                 lista.add(bean);
             }
         } catch (Exception e) {
