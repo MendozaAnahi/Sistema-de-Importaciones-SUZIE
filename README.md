@@ -19,9 +19,7 @@ CREATE TABLE Cliente (
     ClienteID INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL,
     Apellido VARCHAR(100) NOT NULL,
-    Telefono VARCHAR(20),
-    Correo VARCHAR(100),
-    Direccion VARCHAR(200)
+    Telefono VARCHAR(20)
 );
 
 -- Tabla Categoría
@@ -76,7 +74,7 @@ CREATE TABLE MetodoPago (
 );
 INSERT INTO MetodoPago (NombreMetodo) VALUES
 ('Efectivo'), ('Tarjeta de Débito'), ('Tarjeta de Crédito'), 
-('Yape'), ('Plin'), ('Transferencia Bancaria'), ('PayPal');
+('Yape'), ('Plin');
 
 
 -- 2. TABLAS INTERMEDIAS (Dependen de las tablas Padre)
@@ -187,7 +185,7 @@ VALUES
 ('Oxímetro de Pulso', 'Monitor de saturación de oxígeno en la sangre.', 45.00, 60, 10, 5, 1);
 
 
--- 3. TABLAS DE TRANSACCIÓN 
+-- 3. TABLAS DE TRANSACCIÓN (Dependen de múltiples entidades)
 -- Tabla Venta
 CREATE TABLE Venta (
     VentaID INT AUTO_INCREMENT PRIMARY KEY,
@@ -195,10 +193,10 @@ CREATE TABLE Venta (
     Total DECIMAL(10,2) NOT NULL,
     ClienteID INT NOT NULL,
     UsuarioID INT NOT NULL,
-    MetodoPagoID INT NOT NULL,
+    MetodoPagoID INT NOT NULL, 
     FOREIGN KEY (ClienteID) REFERENCES Cliente(ClienteID),
     FOREIGN KEY (UsuarioID) REFERENCES Usuario(UsuarioID),
-    FOREIGN KEY (MetodoPagoID) REFERENCES MetodoPago(MetodoPagoID)
+    FOREIGN KEY (MetodoPagoID) REFERENCES MetodoPago(MetodoPagoID) 
 );
 
 -- Tabla DetalleVenta
