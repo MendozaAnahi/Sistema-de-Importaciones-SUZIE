@@ -1,39 +1,43 @@
 package clases;
 
+/**
+ * @author MendozaAnahi
+ */
+
 public class DetalleVenta {
-
-    private Venta venta;
-    private Producto producto;
-    private int cantidad;
-    private double precioUnitario;
-    private double subtotal;
-
+    // Atributos de la tabla
+    private int ventaID, productoID, cantidad;
+    private double precioUnitario, subtotal;
+    
+    // Constructores
+    //1. Vacío por defecto
     public DetalleVenta() {
     }
-
-    public DetalleVenta(Venta venta, Producto producto,
-                        int cantidad, double precioUnitario, double subtotal) {
-        this.venta = venta;
-        this.producto = producto;
+    
+    //2. Parametrizado completo
+    public DetalleVenta(int ventaID, int productoID, int cantidad, double precioUnitario, double subtotal) {
+        this.ventaID = ventaID;
+        this.productoID = productoID;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.subtotal = subtotal;
     }
-
-    public Venta getVenta() {
-        return venta;
+    
+    // Getters y Setters
+    public int getVentaID() {
+        return ventaID;
     }
 
-    public void setVenta(Venta venta) {
-        this.venta = venta;
+    public void setVentaID(int ventaID) {
+        this.ventaID = ventaID;
     }
 
-    public Producto getProducto() {
-        return producto;
+    public int getProductoID() {
+        return productoID;
     }
 
-    public void setProducto(Producto producto) {
-        this.producto = producto;
+    public void setProductoID(int productoID) {
+        this.productoID = productoID;
     }
 
     public int getCantidad() {
@@ -58,5 +62,5 @@ public class DetalleVenta {
 
     public void setSubtotal(double subtotal) {
         this.subtotal = subtotal;
-    }
+    }    
 }

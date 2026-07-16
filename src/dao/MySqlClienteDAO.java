@@ -1,182 +1,77 @@
 package dao;
 
 import clases.Cliente;
-import utils.MySqlConexion;
+import interfaces.ICrud;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+import utils.MySqlConexion;
 
-public class ClienteDAO {
+/**
+ * @author MendozaAnahi
+ */
 
-    Connection cn;
-    PreparedStatement ps;
-    ResultSet rs;
+public class MySqlClienteDAO implements ICrud<Cliente, Integer>{
 
-    // ============================
-    // LISTAR CLIENTES
-    // ============================
-    public ArrayList<Cliente> listar() {
-
-        ArrayList<Cliente> lista = new ArrayList<>();
-
-        String sql = "SELECT * FROM Cliente";
+    @Override
+    public int save(Cliente bean) {
+        int idGenerado = 0; // Cambiamos 'resultado' por 'idGenerado'
+        Connection cn = null;
+        PreparedStatement pstm = null;
+        ResultSet rs = null; // Necesitamos esto para capturar el ID
 
         try {
-
             cn = MySqlConexion.getConexion();
-            ps = cn.prepareStatement(sql);
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                Cliente c = new Cliente();
-
-                c.setClienteID(rs.getInt("Cliente_ID"));
-                c.setNombre(rs.getString("Nombre"));
-                c.setApellido(rs.getString("Apellido"));
-                c.setTelefono(rs.getString("Telefono"));
-                c.setCorreo(rs.getString("Correo"));
-                c.setDireccion(rs.getString("Direccion"));
-
-                lista.add(c);
+            String sql = "INSERT INTO Cliente (Nombre, Apellido, Telefono) VALUES (?, ?, ?)";
+            pstm = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); // <--- Clave
+        
+            pstm.setString(1, bean.getNombre());
+            pstm.setString(2, bean.getApellido());
+            pstm.setString(3, bean.getTelefono());
+        
+            int filas = pstm.executeUpdate();
+            if (filas > 0) {
+                rs = pstm.getGeneratedKeys();
+                if (rs.next()) idGenerado = rs.getInt(1);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) { 
+            e.printStackTrace(); }
+        finally { 
+            try {
+                if (rs != null) rs.close();
+                if (pstm != null) pstm.close();
+                if (cn != null) cn.close();
+            } catch (Exception e) { e.printStackTrace(); }
         }
-
-        return lista;
+    return idGenerado; // Retorna el ID (ej: 1, 2, 3...)
+    }
+    
+    // 2. MÉTODOS RESTANTES DEL ICRUD
+    @Override
+    public int update(Cliente bean) {
+        return 0;
     }
 
-
-    // ============================
-    // INSERTAR CLIENTE
-    // ============================
-    public boolean insertar(Cliente c) {
-
-        String sql = "INSERT INTO Cliente "
-                + "(Cliente_ID, Nombre, Apellido, Telefono, Correo, Direccion) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
-
-        try {
-
-            cn = MySqlConexion.getConexion();
-            ps = cn.prepareStatement(sql);
-
-            ps.setInt(1, c.getClienteID());
-            ps.setString(2, c.getNombre());
-            ps.setString(3, c.getApellido());
-            ps.setString(4, c.getTelefono());
-            ps.setString(5, c.getCorreo());
-            ps.setString(6, c.getDireccion());
-
-            ps.executeUpdate();
-
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    @Override
+    public int delete(Integer id) {
+        return 0;
     }
 
-
-    // ============================
-    // ACTUALIZAR CLIENTE
-    // ============================
-    public boolean actualizar(Cliente c) {
-
-        String sql = "UPDATE Cliente SET "
-                + "Nombre=?, "
-                + "Apellido=?, "
-                + "Telefono=?, "
-                + "Correo=?, "
-                + "Direccion=? "
-                + "WHERE Cliente_ID=?";
-
-        try {
-
-            cn = MySqlConexion.getConexion();
-            ps = cn.prepareStatement(sql);
-
-            ps.setString(1, c.getNombre());
-            ps.setString(2, c.getApellido());
-            ps.setString(3, c.getTelefono());
-            ps.setString(4, c.getCorreo());
-            ps.setString(5, c.getDireccion());
-            ps.setInt(6, c.getClienteID());
-
-            ps.executeUpdate();
-
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    @Override
+    public Cliente findById(Integer id) {
+        return null;
     }
 
-
-    // ============================
-    // ELIMINAR CLIENTE
-    // ============================
-    public boolean eliminar(int clienteID) {
-
-        String sql = "DELETE FROM Cliente WHERE Cliente_ID=?";
-
-        try {
-
-            cn = MySqlConexion.getConexion();
-            ps = cn.prepareStatement(sql);
-
-            ps.setInt(1, clienteID);
-
-            ps.executeUpdate();
-
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    @Override
+    public List<Cliente> findAll() {
+        return new ArrayList<>();
     }
 
-
-    // ============================
-    // BUSCAR CLIENTE POR ID
-    // ============================
-    public Cliente buscar(int clienteID) {
-
-        Cliente c = null;
-
-        String sql = "SELECT * FROM Cliente WHERE Cliente_ID=?";
-
-        try {
-
-            cn = MySqlConexion.getConexion();
-            ps = cn.prepareStatement(sql);
-
-            ps.setInt(1, clienteID);
-
-            rs = ps.executeQuery();
-
-            if (rs.next()) {
-
-                c = new Cliente();
-
-                c.setClienteID(rs.getInt("Cliente_ID"));
-                c.setNombre(rs.getString("Nombre"));
-                c.setApellido(rs.getString("Apellido"));
-                c.setTelefono(rs.getString("Telefono"));
-                c.setCorreo(rs.getString("Correo"));
-                c.setDireccion(rs.getString("Direccion"));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return c;
+    @Override
+    public List<Cliente> search(String texto) {
+        return new ArrayList<>();
     }
 }
