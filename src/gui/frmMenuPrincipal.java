@@ -3,11 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package gui;
-
-/**
- *
- * @author HP
- */
+import java.awt.Image;
+import javax.swing.ImageIcon;
 public class frmMenuPrincipal extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmMenuPrincipal.class.getName());
@@ -16,9 +13,9 @@ public class frmMenuPrincipal extends javax.swing.JFrame {
      * Creates new form frmMenuPrincipal
      */
     public frmMenuPrincipal() {
-        initComponents();
-        setExtendedState(MAXIMIZED_BOTH);
-    }
+    initComponents();
+    this.setLocationRelativeTo(null);
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -34,9 +31,15 @@ public class frmMenuPrincipal extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        mnuProductos = new javax.swing.JMenu();
+        javax.swing.JMenuItem mnuproductos = new javax.swing.JMenuItem();
+        mnuUsuario = new javax.swing.JMenuItem();
+        mnuCategoria = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        mnuVentas = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
+        mnuSalir = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -68,7 +71,7 @@ public class frmMenuPrincipal extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(154, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
@@ -80,22 +83,108 @@ public class frmMenuPrincipal extends javax.swing.JFrame {
         jMenuBar1.setFont(new java.awt.Font("Arial Rounded MT Bold", 1, 18)); // NOI18N
         jMenuBar1.setMargin(new java.awt.Insets(8, 8, 5, 5));
 
-        jMenu1.setText("Mantenimiento");
-        jMenu1.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 18)); // NOI18N
-        jMenuBar1.add(jMenu1);
+        mnuProductos.setText("Mantenimiento");
+        mnuProductos.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 18)); // NOI18N
+
+        mnuproductos.setText("Productos");
+        mnuproductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuproductosActionPerformed(evt);
+            }
+        });
+        mnuProductos.add(mnuproductos);
+
+        mnuUsuario.setText("Usuario");
+        mnuUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuUsuarioActionPerformed(evt);
+            }
+        });
+        mnuProductos.add(mnuUsuario);
+
+        mnuCategoria.setText("Categoria");
+        mnuCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuCategoriaActionPerformed(evt);
+            }
+        });
+        mnuProductos.add(mnuCategoria);
+
+        jMenuBar1.add(mnuProductos);
 
         jMenu2.setText("Proceso");
         jMenu2.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 18)); // NOI18N
+
+        mnuVentas.setText("Ventas");
+        mnuVentas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuVentasActionPerformed(evt);
+            }
+        });
+        jMenu2.add(mnuVentas);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Sistema");
         jMenu3.setFont(new java.awt.Font("MS Reference Sans Serif", 0, 18)); // NOI18N
+
+        mnuSalir.setText("Salir del Sistema");
+        mnuSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuSalirActionPerformed(evt);
+            }
+        });
+        jMenu3.add(mnuSalir);
+
+        jMenuItem3.setText("jMenuItem3");
+        jMenu3.add(jMenuItem3);
+
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void mnuproductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuproductosActionPerformed
+        
+
+    frmProductos ventana = new frmProductos();
+    ventana.setLocationRelativeTo(this);
+    ventana.setVisible(true);
+    }//GEN-LAST:event_mnuproductosActionPerformed
+
+    private void mnuUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuUsuarioActionPerformed
+        frmUsuarios ventana = new frmUsuarios();
+        ventana.setLocationRelativeTo(this);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_mnuUsuarioActionPerformed
+
+    private void mnuCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuCategoriaActionPerformed
+        frmCategorias ventana = new frmCategorias();
+        ventana.setLocationRelativeTo(this);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_mnuCategoriaActionPerformed
+
+    private void mnuVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuVentasActionPerformed
+        frmMenuVenta ventana = new frmMenuVenta();
+        ventana.setLocationRelativeTo(this);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_mnuVentasActionPerformed
+
+    private void mnuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuSalirActionPerformed
+        
+    int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "¿Desea salir del sistema?",
+            "Salir",
+            javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+        System.exit(0);
+    }
+    }//GEN-LAST:event_mnuSalirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -125,11 +214,16 @@ public class frmMenuPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JMenuItem mnuCategoria;
+    private javax.swing.JMenu mnuProductos;
+    private javax.swing.JMenuItem mnuSalir;
+    private javax.swing.JMenuItem mnuUsuario;
+    private javax.swing.JMenuItem mnuVentas;
     // End of variables declaration//GEN-END:variables
 }
