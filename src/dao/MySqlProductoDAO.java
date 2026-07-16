@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import utils.MySqlConexion;
 
 /**
@@ -159,9 +160,12 @@ public class MySqlProductoDAO implements ICrud<Producto, Integer> {
         try {
             cn = MySqlConexion.getConexion();
             // Solo listamos los productos activos
-            String sql = "SELECT * FROM Producto WHERE Estado=1";
+            String sql = "SELECT * FROM Producto";
             pstm = cn.prepareStatement(sql);
             rs = pstm.executeQuery();
+            while (rs.next()) {
+    System.out.println("Producto: " + rs.getInt(1) + " - " + rs.getString(2));
+}
             
             while (rs.next()) {
                 Producto bean = new Producto();
@@ -178,8 +182,9 @@ public class MySqlProductoDAO implements ICrud<Producto, Integer> {
                 lista.add(bean);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+    JOptionPane.showMessageDialog(null, e.getMessage());
+    e.printStackTrace();
+} finally {
             try {
                 if (cn != null) cn.close();
                 if (pstm != null) pstm.close();
@@ -188,6 +193,7 @@ public class MySqlProductoDAO implements ICrud<Producto, Integer> {
                 ex.printStackTrace();
             }
         }
+        System.out.println("Productos encontrados: " + lista.size());
         return lista;
     }
 

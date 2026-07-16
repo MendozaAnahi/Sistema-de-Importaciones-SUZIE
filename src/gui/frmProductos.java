@@ -4,47 +4,47 @@
  */
 package gui;
 import clases.Producto;
+import static com.mysql.cj.conf.PropertyKey.logger;
 import dao.MySqlProductoDAO;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author HP
  */
 public class frmProductos extends javax.swing.JFrame {
-    private final MySqlProductoDAO dao = new MySqlProductoDAO();
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmProductos.class.getName());
-
-    /**
+    private final MySqlProductoDAO dao = new MySqlProductoDAO();/**
      * Creates new form frmProductos
      */
     public frmProductos() {
         initComponents();
-        txtCodigo.setEditable(false);
         limpiar();
         listarProductos();
     }
     private void listarProductos() {
 
-        DefaultTableModel modelo = (DefaultTableModel) tblProductos.getModel();
+        JOptionPane.showMessageDialog(this, "Entró a listarProductos");
 
-        modelo.setRowCount(0);
+    DefaultTableModel modelo = (DefaultTableModel) tblProductos.getModel();
 
-        List<Producto> lista = dao.findAll();
+    modelo.setRowCount(0);
 
-        for (Producto p : lista) {
-            modelo.addRow(new Object[]{
-                p.getCodigo(),
-                p.getNombre(),
-                p.getDescripcion(),
-                p.getPrecio(),
-                p.getStock(),
-                p.getCategoriaID(),
-                p.getProveedorID(),
-                p.getSedeID(),
-                p.isEstado() ? "Activo" : "Inactivo"
-            });
-        }
+    List<Producto> lista = dao.findAll();
+
+    for (Producto p : lista) {
+        modelo.addRow(new Object[]{
+            p.getCodigo(),
+            p.getNombre(),
+            p.getDescripcion(),
+            p.getPrecio(),
+            p.getStock(),
+            p.getCategoriaID(),
+            p.getProveedorID(),
+            p.getSedeID(),
+            p.isEstado() ? "Activo" : "Inactivo"
+        });
+    }
     }
     private void limpiar() {
 
@@ -499,7 +499,7 @@ public class frmProductos extends javax.swing.JFrame {
             javax.swing.JOptionPane.YES_NO_OPTION);
 
     if (opcion == javax.swing.JOptionPane.YES_OPTION) {
-        int respuesta = dao.delete(Integer.parseInt(txtCodigo.getText()));
+        int respuesta = dao.delete(Integer.valueOf(txtCodigo.getText()));
         if (respuesta > 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
             limpiar();
@@ -516,35 +516,57 @@ public class frmProductos extends javax.swing.JFrame {
     }//GEN-LAST:event_txtStockActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        try {
+        if (txtCodigo.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Seleccione un producto de la tabla.");
+        return;
+    }
+
+    try {
         Producto p = new Producto();
+
         p.setCodigo(Integer.parseInt(txtCodigo.getText()));
         p.setNombre(txtNombre.getText());
         p.setDescripcion(txtDescripcion.getText());
         p.setPrecio(Double.parseDouble(txtPrecio.getText()));
         p.setStock(Integer.parseInt(txtStock.getText()));
-
         p.setCategoriaID(cboCategoria.getSelectedIndex() + 1);
         p.setProveedorID(cboProveedor.getSelectedIndex() + 1);
         p.setSedeID(cboSede.getSelectedIndex() + 1);
         p.setEstado(chkEstado.isSelected());
 
         int respuesta = dao.update(p);
+
         if (respuesta > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
+            JOptionPane.showMessageDialog(this, "Producto actualizado correctamente.");
             limpiar();
             listarProductos();
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "No se pudo actualizar el producto.");
+            JOptionPane.showMessageDialog(this, "No se pudo actualizar.");
         }
 
     } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, e.getMessage());
+        JOptionPane.showMessageDialog(this, e.getMessage());
     }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        Producto p = new Producto();
+        if (txtNombre.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el nombre.");
+        return;
+    }
+    if (txtDescripcion.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese la descripción.");
+        return;
+    }
+    if (txtPrecio.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el precio.");
+        return;
+    }
+    if (txtStock.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el stock.");
+        return;
+    }
+    Producto p = new Producto();
     p.setNombre(txtNombre.getText());
     p.setDescripcion(txtDescripcion.getText());
     p.setPrecio(Double.parseDouble(txtPrecio.getText()));
@@ -553,24 +575,23 @@ public class frmProductos extends javax.swing.JFrame {
     p.setProveedorID(cboProveedor.getSelectedIndex() + 1);
     p.setSedeID(cboSede.getSelectedIndex() + 1);
     p.setEstado(chkEstado.isSelected());
+
     dao.save(p);
-    
+
+    JOptionPane.showMessageDialog(this, "Producto registrado correctamente.");
+
     limpiar();
     listarProductos();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarActionPerformed
-        limpiar();
-        listarProductos();
+         JOptionPane.showMessageDialog(this, "Entró al botón Listar");
+
+    listarProductos();
     }//GEN-LAST:event_btnListarActionPerformed
 
     private void btnBuscarCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarCodigoActionPerformed
-        if (txtBuscarCodigo.getText().trim().isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Ingrese un código.");
-        return;
-    }
-    int codigo = Integer.parseInt(txtBuscarCodigo.getText());
-    Producto p = dao.findById(codigo);
+        Producto p = dao.findById(Integer.valueOf(txtBuscarCodigo.getText()));
 
     if (p != null) {
         txtCodigo.setText(String.valueOf(p.getCodigo()));
@@ -578,60 +599,53 @@ public class frmProductos extends javax.swing.JFrame {
         txtDescripcion.setText(p.getDescripcion());
         txtPrecio.setText(String.valueOf(p.getPrecio()));
         txtStock.setText(String.valueOf(p.getStock()));
+
         cboCategoria.setSelectedIndex(p.getCategoriaID() - 1);
         cboProveedor.setSelectedIndex(p.getProveedorID() - 1);
         cboSede.setSelectedIndex(p.getSedeID() - 1);
+
         chkEstado.setSelected(p.isEstado());
     } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Producto no encontrado.");
+        JOptionPane.showMessageDialog(this, "Producto no encontrado");
+
     }
     }//GEN-LAST:event_btnBuscarCodigoActionPerformed
 
     private void btnBuscarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarNombreActionPerformed
-        String nombre = txtBuscarNombre.getText().trim();
-
-    DefaultTableModel modelo = (DefaultTableModel) tblProductos.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) 
+            tblProductos.getModel();
     modelo.setRowCount(0);
-    List<Producto> lista = dao.search(nombre);
-    if (lista.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron productos.");
-        return;
-    }
-    for (Producto p : lista) {
+
+    for (Producto p : dao.search(txtBuscarNombre.getText())) {
         modelo.addRow(new Object[]{
-            p.getCodigo(),
-            p.getNombre(),
-            p.getDescripcion(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoriaID(),
-            p.getProveedorID(),
-            p.getSedeID(),
-            p.isEstado() ? "Activo" : "Inactivo"
-        });
+    p.getCodigo(),
+    p.getNombre(),
+    p.getDescripcion(),
+    p.getPrecio(),
+    p.getStock(),
+    p.getCategoriaID(),
+    p.getProveedorID(),
+    p.getSedeID(),
+    p.isEstado() ? "Activo" : "Inactivo"
+});
+
     }
     }//GEN-LAST:event_btnBuscarNombreActionPerformed
 
     private void tblProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProductosMouseClicked
         int fila = tblProductos.getSelectedRow();
 
-    txtCodigo.setText(tblProductos.getValueAt(fila, 0).toString());
-    txtNombre.setText(tblProductos.getValueAt(fila, 1).toString());
-    txtDescripcion.setText(tblProductos.getValueAt(fila, 2).toString());
-    txtPrecio.setText(tblProductos.getValueAt(fila, 3).toString());
-    txtStock.setText(tblProductos.getValueAt(fila, 4).toString());
+    txtCodigo.setText(tblProductos.getValueAt(fila,0).toString());
+txtNombre.setText(tblProductos.getValueAt(fila,1).toString());
+txtDescripcion.setText(tblProductos.getValueAt(fila,2).toString());
+txtPrecio.setText(tblProductos.getValueAt(fila,3).toString());
+txtStock.setText(tblProductos.getValueAt(fila,4).toString());
 
-    cboCategoria.setSelectedIndex(
-        Integer.parseInt(tblProductos.getValueAt(fila, 5).toString()) - 1);
+cboCategoria.setSelectedIndex(Integer.parseInt(tblProductos.getValueAt(fila,5).toString())-1);
+cboProveedor.setSelectedIndex(Integer.parseInt(tblProductos.getValueAt(fila,6).toString())-1);
+cboSede.setSelectedIndex(Integer.parseInt(tblProductos.getValueAt(fila,7).toString())-1);
 
-    cboProveedor.setSelectedIndex(
-        Integer.parseInt(tblProductos.getValueAt(fila, 6).toString()) - 1);
-
-    cboSede.setSelectedIndex(
-        Integer.parseInt(tblProductos.getValueAt(fila, 7).toString()) - 1);
-
-    chkEstado.setSelected(
-        tblProductos.getValueAt(fila, 8).toString().equals("Activo"));
+chkEstado.setSelected(tblProductos.getValueAt(fila,8).toString().equals("Activo"));
     }//GEN-LAST:event_tblProductosMouseClicked
 
     private void txtPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioActionPerformed
@@ -649,8 +663,8 @@ public class frmProductos extends javax.swing.JFrame {
     private void txtStockKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStockKeyTyped
        char c = evt.getKeyChar();
 
-     if (!Character.isDigit(c)) {
-    evt.consume();
+    if (!Character.isDigit(c)) {
+        evt.consume();
     }
     }//GEN-LAST:event_txtStockKeyTyped
 
@@ -668,31 +682,31 @@ public class frmProductos extends javax.swing.JFrame {
     if (!Character.isDigit(c) && c != '.') {
         evt.consume();
     }//GEN-LAST:event_txtBuscarCodigoKeyTyped
-
+    }
     private void txtBuscarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscarNombreActionPerformed
-        // TODO add your handling code here:
+        btnBuscarNombre.doClick();
     }//GEN-LAST:event_txtBuscarNombreActionPerformed
 
     private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
-        // TODO add your handling code here:
+        txtDescripcion.requestFocus();
     }//GEN-LAST:event_txtNombreActionPerformed
 
     private void txtCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCodigoActionPerformed
-        // TODO add your handling code here:
+        txtNombre.requestFocus();
     }//GEN-LAST:event_txtCodigoActionPerformed
 
     private void cboCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboCategoriaActionPerformed
-        // TODO add your handling code here:
+        // NADA
     }//GEN-LAST:event_cboCategoriaActionPerformed
 
     private void cboProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboProveedorActionPerformed
-        // TODO add your handling code here:
+        // NADA
     }//GEN-LAST:event_cboProveedorActionPerformed
 
     private void cboSedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSedeActionPerformed
-        // TODO add your handling code here:
+        // NADA
     }//GEN-LAST:event_cboSedeActionPerformed
-    }
+
     /**
      * @param args the command line arguments
      */
@@ -710,8 +724,7 @@ public class frmProductos extends javax.swing.JFrame {
                 }
             }
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
+} 
         //</editor-fold>
 
         /* Create and display the form */
