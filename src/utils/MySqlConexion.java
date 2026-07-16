@@ -1,9 +1,11 @@
 package utils;
 import java.sql.Connection;
 import java.sql.DriverManager;
+
 /**
  * @author MendozaAnahi
  */
+
 public class MySqlConexion {
     public static Connection getConexion(){
         Connection cn=null;
