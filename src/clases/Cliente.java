@@ -1,27 +1,28 @@
 package clases;
 
+/**
+ * @author MendozaAnahi
+ */
+
 public class Cliente {
-
+    //Atributos de la tabla
     private int clienteID;
-    private String nombre;
-    private String apellido;
-    private String telefono;
-    private String correo;
-    private String direccion;
-
+    private String nombre, apellido, telefono;
+    
+    //Constructores
+    //1. Vacío por defecto
     public Cliente() {
     }
-
-    public Cliente(int clienteID, String nombre, String apellido,
-                   String telefono, String correo, String direccion) {
+    
+    //2. Parametrizado completo
+    public Cliente(int clienteID, String nombre, String apellido, String telefono) {
         this.clienteID = clienteID;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
-        this.correo = correo;
-        this.direccion = direccion;
     }
-
+    
+    //getters y setters
     public int getClienteID() {
         return clienteID;
     }
@@ -52,26 +53,5 @@ public class Cliente {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    @Override
-    public String toString() {
-        return nombre + " " + apellido;
     }
 }
