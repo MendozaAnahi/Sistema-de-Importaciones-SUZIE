@@ -283,7 +283,7 @@ public class frmUsuarios extends javax.swing.JFrame {
                     "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
-        }
+        }//HOLA
 
         // --- btnNuevo y btnLimpiar ---
         private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {
