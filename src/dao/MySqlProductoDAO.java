@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import utils.MySqlConexion;
 
 /**
@@ -151,84 +152,86 @@ public class MySqlProductoDAO implements ICrud<Producto, Integer> {
     }
 
     @Override
-    public List<Producto> findAll() {
-        Connection cn = null;
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
-        List<Producto> lista = new ArrayList<Producto>();
-        try {
-            cn = MySqlConexion.getConexion();
-            // Solo listamos los productos activos
-            String sql = "SELECT * FROM Producto WHERE Estado=1";
-            pstm = cn.prepareStatement(sql);
-            rs = pstm.executeQuery();
-            
-            while (rs.next()) {
-                Producto bean = new Producto();
-                bean.setCodigo(rs.getInt(1));
-                bean.setNombre(rs.getString(2));
-                bean.setDescripcion(rs.getString(3));
-                bean.setPrecio(rs.getDouble(4));
-                bean.setStock(rs.getInt(5));
-                bean.setEstado(rs.getBoolean(6));
-                bean.setCategoriaID(rs.getInt(7));
-                bean.setProveedorID(rs.getInt(8));
-                bean.setSedeID(rs.getInt(9));
-                
-                lista.add(bean);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (cn != null) cn.close();
-                if (pstm != null) pstm.close();
-                if (rs != null) rs.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+public List<Producto> findAll() {
+
+    Connection cn = null;
+    PreparedStatement pstm = null;
+    ResultSet rs = null;
+
+    List<Producto> lista = new ArrayList<Producto>();
+
+    try {
+        cn = MySqlConexion.getConexion();
+
+        String sql = "SELECT * FROM Producto";
+
+        pstm = cn.prepareStatement(sql);
+        rs = pstm.executeQuery();
+
+        while (rs.next()) {
+
+            Producto bean = new Producto();
+
+            bean.setCodigo(rs.getInt(1));
+            bean.setNombre(rs.getString(2));
+            bean.setDescripcion(rs.getString(3));
+            bean.setPrecio(rs.getDouble(4));
+            bean.setStock(rs.getInt(5));
+            bean.setEstado(rs.getBoolean(6));
+            bean.setCategoriaID(rs.getInt(7));
+            bean.setProveedorID(rs.getInt(8));
+            bean.setSedeID(rs.getInt(9));
+
+            lista.add(bean);
+
+            System.out.println(
+                    "Producto: "
+                    + bean.getCodigo()
+                    + " - "
+                    + bean.getNombre()
+            );
         }
-        return lista;
+
+    } catch (Exception e) {
+
+        JOptionPane.showMessageDialog(
+                null,
+                "Error al listar productos: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+
+    } finally {
+
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+
+            if (pstm != null) {
+                pstm.close();
+            }
+
+            if (cn != null) {
+                cn.close();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
+
+    System.out.println(
+            "Productos encontrados: "
+            + lista.size()
+    );
+
+    return lista;
+}
 
     @Override
     public List<Producto> search(String texto) {
-        Connection cn = null;
-        PreparedStatement pstm = null;
-        ResultSet rs = null;
-        List<Producto> lista = new ArrayList<Producto>();
-        try {
-            cn = MySqlConexion.getConexion();
-            String sql = "SELECT * FROM Producto WHERE NombreProducto LIKE ? AND Estado=1";
-            pstm = cn.prepareStatement(sql);
-            pstm.setString(1, "%" + texto + "%"); 
-            rs = pstm.executeQuery();
-            
-            while (rs.next()) {
-                Producto bean = new Producto();
-                bean.setCodigo(rs.getInt(1));
-                bean.setNombre(rs.getString(2));
-                bean.setDescripcion(rs.getString(3));
-                bean.setPrecio(rs.getDouble(4));
-                bean.setStock(rs.getInt(5));
-                bean.setEstado(rs.getBoolean(6));
-                bean.setCategoriaID(rs.getInt(7));
-                bean.setProveedorID(rs.getInt(8));
-                bean.setSedeID(rs.getInt(9));
-                
-                lista.add(bean);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (cn != null) cn.close();
-                if (pstm != null) pstm.close();
-                if (rs != null) rs.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return lista;
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
