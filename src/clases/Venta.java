@@ -1,68 +1,78 @@
 package clases; 
 
-import java.time.LocalDateTime; 
+import java.sql.Date;
+
+/**
+ * @author MendozaAnahi
+ */
 
 public class Venta { 
-    private int ventaID; 
-    private LocalDateTime fechaVenta; 
-    private double total; 
-    private Cliente cliente; 
-    private Usuario usuario; 
-    private MetodoPago metodoPago; 
-    
-    public Venta() { 
-    } 
-    
-    public Venta(int ventaID, LocalDateTime fechaVenta, double total, 
-            Cliente cliente, Usuario usuario, MetodoPago metodoPago) { 
-    this.ventaID = ventaID; 
-    this.fechaVenta = fechaVenta; 
-    this.total = total; 
-    this.cliente = cliente; 
-    this.usuario = usuario; 
-    this.metodoPago = metodoPago; 
-    } 
-    
-    public int getVentaID() { 
-      return ventaID; 
-    
-    } public void setVentaID(int ventaID) { 
-      this.ventaID = ventaID; 
-    
-    } public LocalDateTime getFechaVenta() { 
-      return fechaVenta; 
-    
-    } public void setFechaVenta(LocalDateTime fechaVenta) { 
-      this.fechaVenta = fechaVenta; 
-    
-    } public double getTotal() { 
-      return total; 
-    
-    } public void setTotal(double total) { 
-      this.total = total; 
-    
-    } public Cliente getCliente() { 
-      return cliente; 
-    
-    } public void setCliente(Cliente cliente) { 
-      this.cliente = cliente; 
-    
-    } public Usuario getUsuario() { 
-      return usuario; 
-    
-    } public void setUsuario(Usuario usuario) { 
-      this.usuario = usuario; 
-    
-    } public MetodoPago getMetodoPago() { 
-      return metodoPago; 
-      
-    } public void setMetodoPago(MetodoPago metodoPago) { 
-      this.metodoPago = metodoPago; 
-    
+    // Atributos de la tabla
+    private int ventaID, clienteID, usuarioID, metodoPagoID;
+    private Date fechaVenta;
+    private double total;
+
+    // Constructores
+    //1. Vacío por defecto
+    public Venta() {
     }
     
-    @Override 
-    public String toString() { 
-      return "Venta N° " + ventaID; 
-    } 
+    //2. Parametrizado completo
+    public Venta(int ventaID, int clienteID, int usuarioID, int metodoPagoID, Date fechaVenta, double total) {
+        this.ventaID = ventaID;
+        this.clienteID = clienteID;
+        this.usuarioID = usuarioID;
+        this.metodoPagoID = metodoPagoID;
+        this.fechaVenta = fechaVenta;
+        this.total = total;
+    }
+    
+    // Getters y Setters
+    public int getVentaID() {
+        return ventaID;
+    }
+
+    public void setVentaID(int ventaID) {
+        this.ventaID = ventaID;
+    }
+
+    public Date getFechaVenta() {
+        return fechaVenta;
+    }
+
+    public void setFechaVenta(Date fechaVenta) {
+        this.fechaVenta = fechaVenta;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public int getClienteID() {
+        return clienteID;
+    }
+
+    public void setClienteID(int clienteID) {
+        this.clienteID = clienteID;
+    }
+
+    public int getUsuarioID() {
+        return usuarioID;
+    }
+
+    public void setUsuarioID(int usuarioID) {
+        this.usuarioID = usuarioID;
+    }
+
+    public int getMetodoPagoID() {
+        return metodoPagoID;
+    }
+
+    public void setMetodoPagoID(int metodoPagoID) {
+        this.metodoPagoID = metodoPagoID;
+    }
 }
