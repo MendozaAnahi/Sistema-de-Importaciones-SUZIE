@@ -1,24 +1,38 @@
 package gui;
+
 import clases.Cliente;
 import clases.DetalleVenta;
 import clases.Venta;
 import dao.MySqlClienteDAO;
 import dao.MySqlDetalleVentaDAO;
 import dao.MySqlVentaDAO;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
+
 /**
  * @author MendozaAnahi
  */
-
 public class frmMenuVenta extends javax.swing.JFrame {
+
     // 1. Instancia de DAO de Productos
     dao.MySqlProductoDAO daoProd = new dao.MySqlProductoDAO();
-    
+
     // 2. Modelo para manejar la tabla del carrito por código
     javax.swing.table.DefaultTableModel modeloCarrito;
-    
+
     // 3. Variable para ir sumando el dinero
     double totalPagar = 0.0;
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmMenuVenta.class.getName());
 
     /**
@@ -27,12 +41,12 @@ public class frmMenuVenta extends javax.swing.JFrame {
     public frmMenuVenta() {
         initComponents();
         this.setLocationRelativeTo(null); // Centrar la ventana
-        
+
         // Poner la fecha actual en la caja de texto 
         java.time.LocalDate fecha = java.time.LocalDate.now();
         txtFecha.setText(fecha.toString());
         txtFecha.setEditable(false); // Para que el vendedor no haga trampa con la fecha
-        
+
         // Inicializar el carrito y listar los productos
         prepararCarrito();
         listarProductos();
@@ -433,30 +447,47 @@ public class frmMenuVenta extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTelefonoActionPerformed
 
     private void btnProcesarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcesarActionPerformed
-        // 1. GUARDAR CLIENTE
+
+        if (modeloCarrito.getRowCount() == 0) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "Debe agregar al menos un producto al carrito."
+            );
+            return;
+        }
+
+        if (totalPagar <= 0) {
+            javax.swing.JOptionPane.showMessageDialog(
+                    this,
+                    "El total de la venta debe ser mayor a cero."
+            );
+            return;
+        }
+
+// 1. GUARDAR CLIENTE
         Cliente cli = new Cliente();
         cli.setNombre(txtNombres.getText());
         cli.setApellido(txtApellidos.getText());
         cli.setTelefono(txtTelefono.getText());
-    
+
         MySqlClienteDAO daoCli = new MySqlClienteDAO();
-        int idClienteGenerado = daoCli.save(cli); 
-    
+        int idClienteGenerado = daoCli.save(cli);
+
         if (idClienteGenerado > 0) {
             // 2. GUARDAR VENTA
             Venta v = new Venta();
-            v.setClienteID(idClienteGenerado); 
-            v.setTotal(Double.parseDouble(lblTotal.getText().replace("S/ ", "")));
+            v.setClienteID(idClienteGenerado);
+            v.setTotal(totalPagar);
             v.setUsuarioID(1); // Asegúrate de que este ID exista en tu tabla Usuario
-            v.setMetodoPagoID(cboMetodoPago.getSelectedIndex() + 1); 
-        
+            v.setMetodoPagoID(cboMetodoPago.getSelectedIndex() + 1);
+
             MySqlVentaDAO daoVenta = new MySqlVentaDAO();
             int idVentaGenerada = daoVenta.saveAndReturnId(v);
-        
+
             if (idVentaGenerada > 0) {
                 // 3. AQUÍ VA LA LÓGICA PARA DETALLEVENTA (El bucle for)
                 MySqlDetalleVentaDAO daoDetalle = new MySqlDetalleVentaDAO();
-            
+
                 for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
                     DetalleVenta dv = new DetalleVenta();
                     dv.setVentaID(idVentaGenerada); // Usamos el ID que acaba de generar la venta
@@ -464,10 +495,12 @@ public class frmMenuVenta extends javax.swing.JFrame {
                     dv.setCantidad(Integer.parseInt(modeloCarrito.getValueAt(i, 3).toString()));
                     dv.setPrecioUnitario(Double.parseDouble(modeloCarrito.getValueAt(i, 2).toString()));
                     dv.setSubtotal(Double.parseDouble(modeloCarrito.getValueAt(i, 4).toString()));
-                
-                daoDetalle.save(dv); 
+
+                    daoDetalle.save(dv);
                 }
-            
+                
+                generarBoletaPDF(idVentaGenerada);
+
                 javax.swing.JOptionPane.showMessageDialog(this, "¡Venta realizada con éxito!");
                 // Aquí puedes llamar a tu función para limpiar la tabla y los campos
             }
@@ -485,57 +518,57 @@ public class frmMenuVenta extends javax.swing.JFrame {
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // 1. Saber qué producto seleccionó en la tabla de la izquierda
         int filaSeleccionada = tblProductos.getSelectedRow();
-    
+
         if (filaSeleccionada == -1) {
             javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione un producto de la tabla.");
             return; // Corta la ejecución aquí si no hay nada seleccionado
         }
-    
+
         // 2. Validar que la caja de cantidad no esté vacía
         if (txtCantidad.getText().trim().isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar una cantidad.");
             txtCantidad.requestFocus();
             return;
         }
-    
+
         try {
             // 3. Obtener la cantidad que escribió el vendedor
             int cantidad = Integer.parseInt(txtCantidad.getText());
             int stockDisponible = Integer.parseInt(tblProductos.getValueAt(filaSeleccionada, 3).toString());
-            
+
             if (cantidad <= 0) {
                 javax.swing.JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0.");
                 return;
             }
-        
+
             if (cantidad > stockDisponible) {
                 javax.swing.JOptionPane.showMessageDialog(this, "No hay suficiente stock. Disponible: " + stockDisponible);
                 return;
             }
-        
+
             // 4. Capturar los datos de la fila seleccionada
             String codigo = tblProductos.getValueAt(filaSeleccionada, 0).toString();
             String nombre = tblProductos.getValueAt(filaSeleccionada, 1).toString();
             double precio = Double.parseDouble(tblProductos.getValueAt(filaSeleccionada, 2).toString());
-        
+
             // 5. Calcular el subtotal matemático
             double subtotal = precio * cantidad;
-        
+
             // 6. ¡Añadir todo al carrito!
             modeloCarrito.addRow(new Object[]{codigo, nombre, precio, cantidad, subtotal});
-        
+
             // 7. Sumar al total general y mostrarlo en pantalla
             totalPagar += subtotal; // Esta es la variable global que creamos arriba
             lblTotal.setText(String.format("S/ %.2f", totalPagar));
-        
+
             // 8. Limpiar la caja de cantidad para el siguiente producto
             txtCantidad.setText("");
-        
-    } catch (NumberFormatException e) {
-        // Por si el usuario escribe letras en vez de números en la cantidad
-        javax.swing.JOptionPane.showMessageDialog(this, "Ingrese una cantidad numérica válida.");
-    }
-        
+
+        } catch (NumberFormatException e) {
+            // Por si el usuario escribe letras en vez de números en la cantidad
+            javax.swing.JOptionPane.showMessageDialog(this, "Ingrese una cantidad numérica válida.");
+        }
+
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void txtNombresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombresActionPerformed
@@ -544,8 +577,8 @@ public class frmMenuVenta extends javax.swing.JFrame {
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         // 1. Cierras el menú de ventas
-        this.dispose(); 
-    
+        this.dispose();
+
         // 2. Abres el Login (asumiendo que tu clase se llama FrmLogin)
         frmLogin login = new frmLogin();
         login.setVisible(true);
@@ -624,19 +657,242 @@ public class frmMenuVenta extends javax.swing.JFrame {
     void listarProductos() {
         javax.swing.table.DefaultTableModel modeloProd = (javax.swing.table.DefaultTableModel) tblProductos.getModel();
         modeloProd.setRowCount(0); // Limpiar antes de llenar
-        
+
         java.util.List<clases.Producto> lista = daoProd.findAll();
-        
+
         for (clases.Producto p : lista) {
             // Solo mostramos los productos que tengan stock > 0 y estén activos
             if (p.getStock() > 0 && p.isEstado() == true) {
                 modeloProd.addRow(new Object[]{
-                    p.getCodigo(),     
-                    p.getNombre(), 
-                    p.getPrecio(), 
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getPrecio(),
                     p.getStock()
                 });
             }
         }
     }
+
+  private void agregarCabeceraPDF(PdfPTable tabla, String texto) {
+
+    Font fuenteCabecera = FontFactory.getFont(
+            FontFactory.HELVETICA_BOLD,
+            9,
+            BaseColor.WHITE
+    );
+
+    PdfPCell celda = new PdfPCell(
+            new Paragraph(texto, fuenteCabecera)
+    );
+
+    celda.setBackgroundColor(new BaseColor(0, 102, 204));
+    celda.setHorizontalAlignment(Element.ALIGN_CENTER);
+    celda.setPadding(5);
+
+    tabla.addCell(celda);
+}
+
+    private void generarBoletaPDF(int idVenta) {
+
+    Document documento = new Document();
+
+    try {
+        // Crear carpeta donde se guardarán las boletas
+        File carpeta = new File("reportes");
+
+        if (!carpeta.exists()) {
+            carpeta.mkdirs();
+        }
+
+        String ruta = "reportes"
+                + File.separator
+                + "Boleta_"
+                + idVenta
+                + ".pdf";
+
+        PdfWriter.getInstance(
+                documento,
+                new FileOutputStream(ruta)
+        );
+
+        documento.open();
+
+        Font fuenteTitulo = FontFactory.getFont(
+                FontFactory.HELVETICA_BOLD,
+                18,
+                BaseColor.BLACK
+        );
+
+        Font fuenteSubtitulo = FontFactory.getFont(
+                FontFactory.HELVETICA_BOLD,
+                12,
+                BaseColor.BLACK
+        );
+
+        Font fuenteNormal = FontFactory.getFont(
+                FontFactory.HELVETICA,
+                10,
+                BaseColor.BLACK
+        );
+
+        // Título
+        Paragraph titulo = new Paragraph(
+                "SUZIE IMPORTACIONES",
+                fuenteTitulo
+        );
+
+        titulo.setAlignment(Element.ALIGN_CENTER);
+        documento.add(titulo);
+
+        Paragraph subtitulo = new Paragraph(
+                "BOLETA DE VENTA N.° "
+                + String.format("%06d", idVenta),
+                fuenteSubtitulo
+        );
+
+        subtitulo.setAlignment(Element.ALIGN_CENTER);
+        documento.add(subtitulo);
+
+        documento.add(new Paragraph(" "));
+
+        // Datos del cliente
+        documento.add(
+                new Paragraph(
+                        "Fecha: " + txtFecha.getText(),
+                        fuenteNormal
+                )
+        );
+
+        documento.add(
+                new Paragraph(
+                        "Cliente: "
+                        + txtNombres.getText().trim()
+                        + " "
+                        + txtApellidos.getText().trim(),
+                        fuenteNormal
+                )
+        );
+
+        documento.add(
+                new Paragraph(
+                        "Teléfono: "
+                        + txtTelefono.getText().trim(),
+                        fuenteNormal
+                )
+        );
+
+        documento.add(
+                new Paragraph(
+                        "Método de pago: "
+                        + cboMetodoPago.getSelectedItem(),
+                        fuenteNormal
+                )
+        );
+
+        documento.add(new Paragraph(" "));
+
+        // Tabla de productos
+        PdfPTable tabla = new PdfPTable(5);
+
+        tabla.setWidthPercentage(100);
+        tabla.setWidths(
+                new float[]{1.2f, 3.5f, 1.5f, 1.2f, 1.7f}
+        );
+
+        agregarCabeceraPDF(tabla, "Código");
+        agregarCabeceraPDF(tabla, "Producto");
+        agregarCabeceraPDF(tabla, "P. unitario");
+        agregarCabeceraPDF(tabla, "Cantidad");
+        agregarCabeceraPDF(tabla, "Subtotal");
+
+        for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+
+            String codigo = modeloCarrito
+                    .getValueAt(i, 0)
+                    .toString();
+
+            String producto = modeloCarrito
+                    .getValueAt(i, 1)
+                    .toString();
+
+            double precio = Double.parseDouble(
+                    modeloCarrito
+                            .getValueAt(i, 2)
+                            .toString()
+            );
+
+            int cantidad = Integer.parseInt(
+                    modeloCarrito
+                            .getValueAt(i, 3)
+                            .toString()
+            );
+
+            double subtotal = Double.parseDouble(
+                    modeloCarrito
+                            .getValueAt(i, 4)
+                            .toString()
+            );
+
+            tabla.addCell(codigo);
+            tabla.addCell(producto);
+
+            tabla.addCell(
+                    String.format("S/ %.2f", precio)
+            );
+
+            tabla.addCell(
+                    String.valueOf(cantidad)
+            );
+
+            tabla.addCell(
+                    String.format("S/ %.2f", subtotal)
+            );
+        }
+
+        documento.add(tabla);
+        documento.add(new Paragraph(" "));
+
+        Paragraph total = new Paragraph(
+                String.format(
+                        "TOTAL A PAGAR: S/ %.2f",
+                        totalPagar
+                ),
+                fuenteSubtitulo
+        );
+
+        total.setAlignment(Element.ALIGN_RIGHT);
+        documento.add(total);
+
+        documento.add(new Paragraph(" "));
+        documento.add(
+                new Paragraph(
+                        "Gracias por su compra.",
+                        fuenteNormal
+                )
+        );
+
+        documento.close();
+
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Boleta generada correctamente en:\n"
+                + ruta
+        );
+
+    } catch (Exception e) {
+
+        if (documento.isOpen()) {
+            documento.close();
+        }
+
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Error al generar la boleta: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+    
 }

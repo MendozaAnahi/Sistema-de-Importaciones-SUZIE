@@ -7,6 +7,19 @@ import clases.Producto;
 import dao.MySqlProductoDAO;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import javax.swing.JOptionPane;
 /**
  *
  * @author HP
@@ -42,7 +55,7 @@ public class frmProductos extends javax.swing.JFrame {
                 p.getCategoriaID(),
                 p.getProveedorID(),
                 p.getSedeID(),
-                p.isEstado() ? "Activo" : "Inactivo"
+                p.isEstado()
             });
         }
     }
@@ -107,6 +120,7 @@ public class frmProductos extends javax.swing.JFrame {
         btnListar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblProductos = new javax.swing.JTable();
+        btnGenerar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -405,6 +419,13 @@ public class frmProductos extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(tblProductos);
 
+        btnGenerar.setText("Generar Reporte");
+        btnGenerar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGenerarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -436,6 +457,8 @@ public class frmProductos extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnGenerar)
+                                .addGap(36, 36, 36)
                                 .addComponent(btnListar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane2))
@@ -462,7 +485,8 @@ public class frmProductos extends javax.swing.JFrame {
                     .addComponent(btnGuardar)
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar)
-                    .addComponent(btnListar))
+                    .addComponent(btnListar)
+                    .addComponent(btnGenerar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(19, Short.MAX_VALUE))
@@ -607,7 +631,7 @@ public class frmProductos extends javax.swing.JFrame {
             p.getCategoriaID(),
             p.getProveedorID(),
             p.getSedeID(),
-            p.isEstado() ? "Activo" : "Inactivo"
+            p.isEstado() 
         });
     }
     }//GEN-LAST:event_btnBuscarNombreActionPerformed
@@ -668,7 +692,7 @@ public class frmProductos extends javax.swing.JFrame {
     if (!Character.isDigit(c) && c != '.') {
         evt.consume();
     }//GEN-LAST:event_txtBuscarCodigoKeyTyped
-
+}
     private void txtBuscarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscarNombreActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtBuscarNombreActionPerformed
@@ -692,7 +716,22 @@ public class frmProductos extends javax.swing.JFrame {
     private void cboSedeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSedeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cboSedeActionPerformed
+
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+
+    if (tblProductos.getRowCount() == 0) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "No hay productos para generar el reporte."
+        );
+
+        return;
     }
+
+    generarReporteProductosPDF();
+    }//GEN-LAST:event_btnGenerarActionPerformed
+    
     /**
      * @param args the command line arguments
      */
@@ -723,6 +762,7 @@ public class frmProductos extends javax.swing.JFrame {
     private javax.swing.JButton btnBuscarCodigo;
     private javax.swing.JButton btnBuscarNombre;
     private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGenerar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnListar;
     private javax.swing.JComboBox<String> cboCategoria;
@@ -755,4 +795,232 @@ public class frmProductos extends javax.swing.JFrame {
     private javax.swing.JTextField txtPrecio;
     private javax.swing.JTextField txtStock;
     // End of variables declaration//GEN-END:variables
+
+    
+    private void agregarCabeceraPDF(
+        PdfPTable tabla,
+        String texto) {
+
+    Font fuenteCabecera = FontFactory.getFont(
+            FontFactory.HELVETICA_BOLD,
+            8,
+            BaseColor.WHITE
+    );
+
+    PdfPCell celda = new PdfPCell(
+            new Paragraph(texto, fuenteCabecera)
+    );
+
+    celda.setBackgroundColor(
+            new BaseColor(0, 51, 153)
+    );
+
+    celda.setHorizontalAlignment(
+            Element.ALIGN_CENTER
+    );
+
+    celda.setVerticalAlignment(
+            Element.ALIGN_MIDDLE
+    );
+
+    celda.setPadding(4);
+
+    tabla.addCell(celda);
+}
+    
+    
+    
+    private void generarReporteProductosPDF() {
+
+    Document documento = new Document();
+
+    try {
+        File carpeta = new File("reportes");
+
+        if (!carpeta.exists()) {
+            carpeta.mkdirs();
+        }
+
+        String ruta = "reportes"
+                + File.separator
+                + "Reporte_Productos.pdf";
+
+        PdfWriter.getInstance(
+                documento,
+                new FileOutputStream(ruta)
+        );
+
+        documento.open();
+
+        Font fuenteTitulo = FontFactory.getFont(
+                FontFactory.HELVETICA_BOLD,
+                18,
+                BaseColor.BLACK
+        );
+
+        Font fuenteSubtitulo = FontFactory.getFont(
+                FontFactory.HELVETICA,
+                10,
+                BaseColor.DARK_GRAY
+        );
+
+        Paragraph titulo = new Paragraph(
+                "SUZIE IMPORTACIONES",
+                fuenteTitulo
+        );
+
+        titulo.setAlignment(Element.ALIGN_CENTER);
+        documento.add(titulo);
+
+        Paragraph subtitulo = new Paragraph(
+                "REPORTE GENERAL DE PRODUCTOS",
+                fuenteTitulo
+        );
+
+        subtitulo.setAlignment(Element.ALIGN_CENTER);
+        documento.add(subtitulo);
+
+        documento.add(new Paragraph(" "));
+
+        Paragraph fecha = new Paragraph(
+                "Fecha de generación: "
+                + java.time.LocalDate.now(),
+                fuenteSubtitulo
+        );
+
+        fecha.setAlignment(Element.ALIGN_RIGHT);
+        documento.add(fecha);
+
+        documento.add(new Paragraph(" "));
+
+        PdfPTable tabla = new PdfPTable(9);
+
+        tabla.setWidthPercentage(100);
+
+        tabla.setWidths(
+                new float[]{
+                    1.0f,
+                    2.4f,
+                    3.0f,
+                    1.3f,
+                    1.0f,
+                    1.3f,
+                    1.3f,
+                    1.0f,
+                    1.2f
+                }
+        );
+
+        agregarCabeceraPDF(tabla, "Código");
+        agregarCabeceraPDF(tabla, "Nombre");
+        agregarCabeceraPDF(tabla, "Descripción");
+        agregarCabeceraPDF(tabla, "Precio");
+        agregarCabeceraPDF(tabla, "Stock");
+        agregarCabeceraPDF(tabla, "Categoría");
+        agregarCabeceraPDF(tabla, "Proveedor");
+        agregarCabeceraPDF(tabla, "Sede");
+        agregarCabeceraPDF(tabla, "Estado");
+
+        for (int i = 0; i < tblProductos.getRowCount(); i++) {
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 0)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 1)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 2)
+                            .toString()
+            );
+
+            double precio = Double.parseDouble(
+                    tblProductos
+                            .getValueAt(i, 3)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    String.format("S/ %.2f", precio)
+            );
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 4)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 5)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 6)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    tblProductos
+                            .getValueAt(i, 7)
+                            .toString()
+            );
+
+            boolean estado = Boolean.parseBoolean(
+                    tblProductos
+                            .getValueAt(i, 8)
+                            .toString()
+            );
+
+            tabla.addCell(
+                    estado ? "Activo" : "Inactivo"
+            );
+        }
+
+        documento.add(tabla);
+
+        documento.add(new Paragraph(" "));
+
+        Paragraph totalRegistros = new Paragraph(
+                "Total de productos registrados: "
+                + tblProductos.getRowCount()
+        );
+
+        totalRegistros.setAlignment(Element.ALIGN_RIGHT);
+
+        documento.add(totalRegistros);
+
+        documento.close();
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Reporte generado correctamente en:\n"
+                + ruta
+        );
+
+    } catch (Exception e) {
+
+        if (documento.isOpen()) {
+            documento.close();
+        }
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Error al generar el reporte: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+
 }
