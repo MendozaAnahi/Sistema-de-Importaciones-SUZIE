@@ -1,22 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package gui;
 
 /**
- *
- * @author HP
+ * @author MendozaAnahi
  */
+
 public class frmLogin extends javax.swing.JFrame {
+    // 1. Instanciamos el DAO de Usuario que acabamos de crear
+    dao.MySqlUsuarioDAO daoUsuario = new dao.MySqlUsuarioDAO();
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmLogin.class.getName());
-
     /**
      * Creates new form frmLogin
      */
     public frmLogin() {
         initComponents();
+        this.setLocationRelativeTo(null); // Para que el login aparezca centrado en la pantalla
     }
 
     /**
@@ -113,7 +111,7 @@ public class frmLogin extends javax.swing.JFrame {
         btnIngresar.setBackground(new java.awt.Color(0, 102, 204));
         btnIngresar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnIngresar.setForeground(new java.awt.Color(255, 255, 255));
-        btnIngresar.setText("Ingresar");
+        btnIngresar.setText("Iniciar Sesión");
         btnIngresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnIngresarActionPerformed(evt);
@@ -136,10 +134,10 @@ public class frmLogin extends javax.swing.JFrame {
                             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(137, 137, 137)
-                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(141, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(0, 111, Short.MAX_VALUE)
+                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(108, 108, 108))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,20 +182,49 @@ public class frmLogin extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 6, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        // TODO add your handling code here:
+        // 1. Capturar lo que el usuario escribió
+        String correo = txtUsuario.getText();
+        String clave = new String(pswContraseña.getPassword()); // getPassword() es lo correcto por seguridad
+        
+        // 2. Llamar al método de tu DAO
+        clases.Usuario bean = daoUsuario.iniciarSesion(correo, clave);
+        
+        // 3. Validar si existe o no
+        if (bean == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrectos", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } else {
+            // 4. Si existe, guardamos sus datos en las variables globales
+            utils.Variables.codigoUsuario = bean.getUsuarioID();
+            utils.Variables.datosUsuario = bean.getNombre() + " " + bean.getApellido();
+            utils.Variables.rolUsuario = bean.getRolID();
+            
+            // 5. Redirigir según el rol
+            if (bean.getRolID() == 1) {
+                // Rol 1: Administrador -> Va al menú principal
+                frmMenuPrincipal frmAdmin = new frmMenuPrincipal();
+                frmAdmin.setVisible(true);
+            } else if (bean.getRolID() == 2) {
+                // Rol 2: Vendedor -> Va directo al carrito de compras
+                frmMenuVenta frmVenta = new frmMenuVenta();
+                frmVenta.setVisible(true);
+            }
+            
+            // 6. Cerrar la ventana de Login
+            this.dispose();
+        }
     }//GEN-LAST:event_btnIngresarActionPerformed
 
     /**
